@@ -21,8 +21,8 @@ export async function handleLogin(loginData: any) {
     try{
         const result = await login(loginData);
         if(result.success){
-            setAuthToken(result.token);
-            setUserData(result.data);
+            await setAuthToken(result.token);
+            await setUserData(result.data);
             
             return { 
                 success: true,

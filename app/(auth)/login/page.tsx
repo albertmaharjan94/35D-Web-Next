@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/lib/actions/auth-action";
+import { useAuth } from "@/context/AuthContext";
 
 export const loginSchema = z.object(
     {
@@ -19,6 +20,8 @@ export type LoginForm = z.infer<typeof loginSchema>;
 export default function Page() {
     const router = useRouter();
     const [pending, setTransition] = useTransition()
+    const { checkAuth } = useAuth();
+
     const { register, handleSubmit, formState: { errors, isSubmitting } }
         = useForm<LoginForm>(
             {
@@ -35,6 +38,7 @@ export default function Page() {
                 throw new Error(result.message);
             }
             // later redirect based on role
+            await checkAuth();
             setTransition(() => {
                 router.push("/");
             });
