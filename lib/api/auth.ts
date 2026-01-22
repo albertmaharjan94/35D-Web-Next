@@ -20,3 +20,13 @@ export const login = async (loginData: any) => {
         || error.message || 'Login failed');
   }
 }
+
+export const whoAmI = async () => {
+  try{
+    const response = await axios.get(API.AUTH.WHOAMI);
+    return response.data;
+  }catch(error: Error | any){
+    throw new Error(error.response?.data?.message 
+        || error.message || 'Whoami failed');
+  }
+}

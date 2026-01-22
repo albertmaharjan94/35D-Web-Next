@@ -1,6 +1,6 @@
-'use client';
+'use server';
 
-import {  register, login } from '@/lib/api/auth';
+import {  register, login, whoAmI } from '@/lib/api/auth';
 import { setAuthToken, setUserData } from '@/lib/cookie';
 
 export async function handleRegister(registrationData: any) {
@@ -21,8 +21,8 @@ export async function handleLogin(loginData: any) {
     try{
         const result = await login(loginData);
         if(result.success){
-            await setAuthToken(result.token);
             await setUserData(result.data);
+            await setAuthToken(result.token);
             
             return { 
                 success: true,
@@ -35,4 +35,20 @@ export async function handleLogin(loginData: any) {
         console.log(error)
         return { success: false, message: error.message };
     }
+}
+
+export async function handleWhoAmI() {
+  try{
+    const result = await whoAmI();
+    if(result.success){
+        return { 
+            success: true,
+            message: 'User data fetched successfully', 
+            data: result.data 
+        };
+    }
+    return { success: false, message: result.message || 'Failed to fetch user data' };
+  }catch(error: Error | any){
+    return { success: false, message: error.message };
+  }
 }
