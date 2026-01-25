@@ -1,7 +1,8 @@
 'use server';
 
-import {  register, login, whoAmI } from '@/lib/api/auth';
+import {  register, login, whoAmI, updateProfile } from '@/lib/api/auth';
 import { setAuthToken, setUserData } from '@/lib/cookie';
+import { revalidatePath } from 'next/cache';
 
 export async function handleRegister(registrationData: any) {
   try {
@@ -48,6 +49,24 @@ export async function handleWhoAmI() {
         };
     }
     return { success: false, message: result.message || 'Failed to fetch user data' };
+  }catch(error: Error | any){
+    return { success: false, message: error.message };
+  }
+}
+
+export async function handleUpdateProfile(profileData: any) {
+  try{
+    const result = await updateProfile(profileData);
+    if(result.success){
+        await setUserData(result.data); // update cookie 
+        revalidatePath('/user/profile'); // revalidate profile page/ refresh new data
+        return { 
+            success: true,
+            message: 'Profile updated successfully', 
+            data: result.data
+        };
+    }
+    return { success: false, message: result.message || 'Failed to update profile' };
   }catch(error: Error | any){
     return { success: false, message: error.message };
   }
